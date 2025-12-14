@@ -1,0 +1,5 @@
+[env]
+LIBRAW_NODLL = "1"
+# Define the macro for MSVC so LibRaw builds without dllimport/dllexport noise
+CXXFLAGS = "/DLIBRAW_NODLL"
+CFLAGS = "/DLIBRAW_NODLL"

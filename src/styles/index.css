@@ -1,0 +1,88 @@
+@import "tailwindcss";
+
+@layer base {
+  :root {
+    color-scheme: light;
+    --bg: #f6f7fb;
+    --surface: #ffffff;
+    --surface-muted: #f0f2f5;
+    --border: #e3e5e8;
+    --border-strong: #d5d7db;
+    --text-primary: #111827;
+    --text-secondary: #4b5563;
+    --text-muted: #6b7280;
+    --accent: #2563eb;
+    --accent-soft: #e8f1ff;
+    --shadow-soft: 0px 16px 48px rgba(15, 23, 42, 0.08);
+    font-family: -apple-system, "SF Pro Text", "Segoe UI", system-ui, sans-serif;
+    background-color: var(--bg);
+    color: var(--text-primary);
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  [data-theme="dark"] {
+    color-scheme: dark;
+    --bg: #0f1115;
+    --surface: #16181d;
+    --surface-muted: #111318;
+    --border: #252a32;
+    --border-strong: #303540;
+    --text-primary: #f3f4f6;
+    --text-secondary: #c7c9d1;
+    --text-muted: #9ca3af;
+    --accent: #3b82f6;
+    --accent-soft: #1c2944;
+    --shadow-soft: 0px 16px 48px rgba(0, 0, 0, 0.35);
+  }
+
+  * {
+    box-sizing: border-box;
+  }
+
+  body {
+    min-height: 100vh;
+    margin: 0;
+    background: var(--bg);
+    color: var(--text-primary);
+  }
+
+  #root {
+    min-height: 100vh;
+  }
+
+  button,
+  input,
+  select {
+    font: inherit;
+  }
+
+  ::selection {
+    background: var(--accent-soft);
+    color: var(--text-primary);
+  }
+}
+
+@layer utilities {
+  .glass-panel {
+    border: 1px solid var(--border);
+    background: var(--surface);
+    box-shadow: var(--shadow-soft);
+  }
+
+  @keyframes shimmer {
+    0% {
+      transform: translateX(-60%);
+    }
+    50% {
+      transform: translateX(60%);
+    }
+    100% {
+      transform: translateX(160%);
+    }
+  }
+
+  .animate-shimmer {
+    animation: shimmer 1.2s ease-in-out infinite;
+  }
+}
