@@ -104,29 +104,30 @@ fn fs_globals(in: VsOut) -> @location(0) vec4f {
   let uv = clamp(in.uv, vec2f(0.0, 0.0), vec2f(1.0, 1.0));
   let uv_flipped = vec2f(uv.x, 1.0 - uv.y);
   var c = textureSample(tex, samp, uv_flipped);
+  var rgb = c.rgb;
 
   // apply globals (mirrors CPU path)
-  c.rgb = c.rgb * globals.exposure_mul;
-  c.r = c.r * (1.0 + globals.temp * 0.5 + globals.tint * 0.2);
-  c.b = c.b * (1.0 - globals.temp * 0.5 + globals.tint * 0.2);
-  c.g = c.g * (1.0 - globals.tint * 0.2);
+  rgb = rgb * globals.exposure_mul;
+  rgb.r = rgb.r * (1.0 + globals.temp * 0.5 + globals.tint * 0.2);
+  rgb.b = rgb.b * (1.0 - globals.temp * 0.5 + globals.tint * 0.2);
+  rgb.g = rgb.g * (1.0 - globals.tint * 0.2);
 
-  let l = 0.2126 * c.r + 0.7152 * c.g + 0.0722 * c.b;
+  let l = 0.2126 * rgb.r + 0.7152 * rgb.g + 0.0722 * rgb.b;
   let highlights_mask = max(l - 0.5, 0.0) * 2.0;
   let shadows_mask = max(0.5 - l, 0.0) * 2.0;
-  c.rgb = c.rgb * (1.0 + globals.highlights * highlights_mask);
-  c.rgb = c.rgb * (1.0 + globals.shadows * shadows_mask);
-  c.rgb = c.rgb + globals.whites * 0.1;
-  c.rgb = c.rgb - globals.blacks * 0.1;
-  c.rgb = (c.rgb - vec3f(0.5,0.5,0.5)) * (1.0 + globals.contrast) + vec3f(0.5,0.5,0.5);
+  rgb = rgb * (1.0 + globals.highlights * highlights_mask);
+  rgb = rgb * (1.0 + globals.shadows * shadows_mask);
+  rgb = rgb + globals.whites * 0.1;
+  rgb = rgb - globals.blacks * 0.1;
+  rgb = (rgb - vec3f(0.5,0.5,0.5)) * (1.0 + globals.contrast) + vec3f(0.5,0.5,0.5);
 
-  let l2 = 0.2126 * c.r + 0.7152 * c.g + 0.0722 * c.b;
-  let vib_mask = clamp(1.0 - (abs(c.r - l2) + abs(c.g - l2) + abs(c.b - l2)) / 3.0, 0.0, 1.0);
+  let l2 = 0.2126 * rgb.r + 0.7152 * rgb.g + 0.0722 * rgb.b;
+  let vib_mask = clamp(1.0 - (abs(rgb.r - l2) + abs(rgb.g - l2) + abs(rgb.b - l2)) / 3.0, 0.0, 1.0);
   let vib_factor = 1.0 + globals.vibrance * vib_mask;
   let sat_factor = 1.0 + globals.saturation;
-  c.rgb = l2 + (c.rgb - l2) * sat_factor * vib_factor;
-  c.rgb = clamp(c.rgb, vec3f(0.0,0.0,0.0), vec3f(1.0,1.0,1.0));
-  return vec4f(c.rgb, c.a);
+  rgb = l2 + (rgb - l2) * sat_factor * vib_factor;
+  rgb = clamp(rgb, vec3f(0.0,0.0,0.0), vec3f(1.0,1.0,1.0));
+  return vec4f(rgb, c.a);
 }
 "#
             .into(),
