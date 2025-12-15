@@ -18,6 +18,7 @@ struct GpuContext {
 }
 
 static GPU_CONTEXT: OnceCell<Result<Arc<GpuContext>, String>> = OnceCell::new();
+const GLOBALS_UBO_SIZE: u64 = (12 * 4) as u64; // 12 f32 values in Globals = 48 bytes
 
 fn init_gpu_context() -> Result<Arc<GpuContext>, String> {
     // Headless instance; use all backends to maximize compatibility.
@@ -175,18 +176,18 @@ fn fs_globals(in: VsOut) -> @location(0) vec4f {
                 },
                 count: None,
             },
-            wgpu::BindGroupLayoutEntry {
-                binding: 2,
-                visibility: wgpu::ShaderStages::FRAGMENT,
-                ty: wgpu::BindingType::Buffer {
-                    ty: wgpu::BufferBindingType::Uniform,
-                    has_dynamic_offset: false,
-                    min_binding_size: std::num::NonZeroU64::new(64),
+                wgpu::BindGroupLayoutEntry {
+                    binding: 2,
+                    visibility: wgpu::ShaderStages::FRAGMENT,
+                    ty: wgpu::BindingType::Buffer {
+                        ty: wgpu::BufferBindingType::Uniform,
+                        has_dynamic_offset: false,
+                        min_binding_size: std::num::NonZeroU64::new(GLOBALS_UBO_SIZE),
+                    },
+                    count: None,
                 },
-                count: None,
-            },
-        ],
-    });
+            ],
+        });
 
     let pipeline_layout_resize = device.create_pipeline_layout(&wgpu::PipelineLayoutDescriptor {
         label: Some("openroom-gpu-pipeline-resize"),
